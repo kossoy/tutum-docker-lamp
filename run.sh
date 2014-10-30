@@ -13,5 +13,11 @@ if [[ ! -d $VOLUME_HOME/mysql ]]; then
 else
     echo "=> Using an existing volume of MySQL"
 fi
+if [ ! -f /.root_pw_set ]; then
+	/set_root_pw.sh
+fi
+
+/usr/sbin/sshd
+service samba start
 
 exec supervisord -n

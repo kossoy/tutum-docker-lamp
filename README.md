@@ -1,19 +1,16 @@
-tutum-docker-lamp
+lamps
 =================
 
-Out-of-the-box LAMP image (PHP+MySQL)
+Combined out-of-the-box LAMP image (PHP+MySQL) from tutum/lamp plus ssh from tutum/ubuntu
+and samba sharing of the apps folder
 
 
 Usage
 -----
 
-To create the image `tutum/lamp`, execute the following command on the tutum-docker-lamp folder:
+To create the image, execute the following command on the tutum-docker-lamp folder:
 
-	docker build -t tutum/lamp .
-
-You can now push your new image to the registry:
-
-	docker push tutum/lamp
+	docker build -t kossoy/lamps .
 
 
 Running your LAMP docker image
@@ -21,40 +18,33 @@ Running your LAMP docker image
 
 Start your image binding the external ports 80 and 3306 in all interfaces to your container:
 
-	docker run -d -p 80:80 -p 3306:3306 tutum/lamp
+	docker run --name <container name> -d -p 80:80 -p 3306:3306 -p 445:445 -p kossoy/lamps 
+	
 
-Test your deployment:
-
-	curl http://localhost/
-
-Hello world!
+Optional 3000, 9000 and 8080 ports.
 
 
-Loading your custom PHP application
------------------------------------
+Connecting to the ssh server 
+-----------------------------
 
-In order to replace the "Hello World" application that comes bundled with this docker image,
-create a new `Dockerfile` in an empty folder with the following contents:
+The first time that you run your container, a random password will be generated
+for user `root`. To get the password, check the logs of the container by running:
 
-	FROM tutum/lamp:latest
-	RUN rm -fr /app && git clone https://github.com/username/customapp.git /app
-	EXPOSE 80 3306
-	CMD ["/run.sh"]
+	docker logs <CONTAINER_ID>
 
-replacing `https://github.com/username/customapp.git` with your application's GIT repository.
-After that, build the new `Dockerfile`:
+You will see an output like the following:
 
-	docker build -t username/my-lamp-app .
+	========================================================================
+	You can now connect to this Ubuntu container via SSH using:
 
-And test it:
+	    ssh -p <port> root@<host>
+	and enter the root password 'U0iSGVUCr7W3' when prompted
 
-	docker run -d -p 80:80 -p 3306:3306 username/my-lamp-app
+	Please remember to change the above password as soon as possible!
+	========================================================================
 
-Test your deployment:
+In this case, `U0iSGVUCr7W3` is the password allocated to the `root` user.
 
-	curl http://localhost/
-
-That's it!
 
 
 Connecting to the bundled MySQL server from within the container
@@ -122,4 +112,4 @@ Disabling .htaccess
     RUN a2enmod rewrite
 
 
-**by http://www.tutum.co**
+Thanks to **http://www.tutum.co**
